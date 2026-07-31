@@ -13,7 +13,7 @@
  * @module
  */
 import { Either, left, right } from '@sweet-monads/either'
-import { dirname, join, normalize, posix } from 'path'
+import { dirname, join, normalize } from 'path'
 import { readFileSync } from 'fs'
 import { lf } from 'eol'
 
