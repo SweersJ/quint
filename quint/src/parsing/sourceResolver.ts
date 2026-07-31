@@ -88,10 +88,12 @@ export function fileSourceResolver(
 ): SourceResolver {
   return {
     lookupPath: (basepath: string, importPath: string) => {
+      const normalizedPath = normalize(join(basepath, importPath))
       return {
-        normalizedPath: normalize(join(basepath, importPath)),
+        normalizedPath: normalizedPath,
         toSourceName: () => {
-          return replacer(posix.join(basepath, importPath))
+          // Always use forward slashes so source names are platform-independent
+          return replacer(normalizedPath).replace(/\\/g, '/')
         },
       }
     },
