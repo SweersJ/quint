@@ -18,7 +18,7 @@ import os from 'os'
 import chalk from 'chalk'
 import { rustEvaluatorDir } from '../config'
 
-export const QUINT_EVALUATOR_VERSION = 'v0.6.0'
+export const QUINT_EVALUATOR_VERSION = 'v0.6.2'
 
 interface GitHubRelease {
   tag_name: string

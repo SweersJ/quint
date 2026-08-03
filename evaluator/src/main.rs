@@ -13,6 +13,7 @@ use std::time::Instant;
 use argh::FromArgs;
 use eyre::bail;
 use quint_evaluator::evaluator::evaluate_at_state;
+use quint_evaluator::itf::TraceStatus;
 use quint_evaluator::ir::{LookupDefinition, LookupTable, QuintError, QuintEx};
 use quint_evaluator::progress;
 use quint_evaluator::simulator::{
@@ -545,7 +546,7 @@ fn to_test_output(result: TestResult) -> TestOutput {
         .traces
         .into_iter()
         .map(|t| TestTrace {
-            result: !t.violation,
+            result: t.status == TraceStatus::Ok,
             seed: t.seed as usize,
             states: t.to_itf(result.name.clone()),
         })
@@ -596,7 +597,7 @@ fn to_sim_output(
                     .map(|t| SimulationTrace {
                         seed: t.seed as usize,
                         has_diagnostics: t.has_diagnostics(),
-                        result: !t.violation,
+                        result: t.status == TraceStatus::Ok,
                         states: t.to_itf(source.to_string()),
                     })
                     .collect(),

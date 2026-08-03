@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use quint_evaluator::{helpers, progress, simulator::SimulationConfig, Verbosity};
+use quint_evaluator::{helpers, itf::TraceStatus, progress, simulator::SimulationConfig, Verbosity};
 
 #[test]
 fn tictactoe_ok() {
@@ -48,7 +48,8 @@ fn tictactoe_violation() {
             .best_traces
             .first()
             .expect("best_traces should not be empty")
-            .violation
+            .status
+            == TraceStatus::Violation
     );
 }
 
@@ -153,7 +154,10 @@ fn tictactoe_multiple_violations() {
     assert_eq!(result.best_traces.len(), 3);
     // All traces in best_traces should be violations
     for trace in &result.best_traces {
-        assert!(trace.violation, "expected all best traces to be violations");
+        assert!(
+            trace.status == TraceStatus::Violation,
+            "expected all best traces to be violations"
+        );
     }
 }
 
@@ -206,7 +210,7 @@ fn tictactoe_best_traces_quality_order() {
     // Verify ordering: violations come before successes
     let mut seen_success = false;
     for trace in &result.best_traces {
-        if trace.violation {
+        if trace.status == TraceStatus::Violation {
             assert!(
                 !seen_success,
                 "violation trace appeared after a success trace"
@@ -220,7 +224,7 @@ fn tictactoe_best_traces_quality_order() {
     let violation_lengths: Vec<_> = result
         .best_traces
         .iter()
-        .filter(|t| t.violation)
+        .filter(|t| t.status == TraceStatus::Violation)
         .map(|t| t.states.len())
         .collect();
     for window in violation_lengths.windows(2) {
@@ -236,7 +240,7 @@ fn tictactoe_best_traces_quality_order() {
     let success_lengths: Vec<_> = result
         .best_traces
         .iter()
-        .filter(|t| !t.violation)
+        .filter(|t| t.status == TraceStatus::Ok)
         .map(|t| t.states.len())
         .collect();
     for window in success_lengths.windows(2) {

@@ -3,7 +3,7 @@
 use crate::{
     evaluator::{Env, Interpreter},
     ir::{LookupTable, QuintError, QuintEx},
-    itf::{DebugMessage, Trace},
+    itf::{DebugMessage, Trace, TraceStatus},
     progress::Reporter,
     rand::Rand,
     storage::Storage,
@@ -273,7 +273,11 @@ impl ParsedQuint {
                         &mut best_traces,
                         Trace {
                             states: std::mem::take(&mut env.trace),
-                            violation: !success,
+                            status: if success {
+                                TraceStatus::Ok
+                            } else {
+                                TraceStatus::Violation
+                            },
                             seed,
                         },
                         n_traces.max(1),
@@ -320,7 +324,7 @@ impl ParsedQuint {
                         seed,
                         trace: Trace {
                             states: trace,
-                            violation: false,
+                            status: TraceStatus::Error,
                             seed,
                         },
                         error: e,
@@ -341,7 +345,7 @@ impl ParsedQuint {
                         seed,
                         trace: Trace {
                             states: trace,
-                            violation: false,
+                            status: TraceStatus::Error,
                             seed,
                         },
                         error: QuintError {

@@ -11,10 +11,27 @@ use chrono;
 use itf;
 use std::collections::BTreeMap;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TraceStatus {
+    Ok,
+    Violation,
+    Error,
+}
+
+impl TraceStatus {
+    fn as_str(self) -> &'static str {
+        match self {
+            TraceStatus::Ok => "ok",
+            TraceStatus::Violation => "violation",
+            TraceStatus::Error => "error",
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Trace {
     pub states: Vec<State>,
-    pub violation: bool,
+    pub status: TraceStatus,
     pub seed: u64,
 }
 
@@ -42,7 +59,7 @@ impl serde::Serialize for DebugMessage {
 
 impl TraceQuality for Trace {
     fn is_violation(&self) -> bool {
-        self.violation
+        self.status == TraceStatus::Violation
     }
 
     fn has_diagnostics(&self) -> bool {
@@ -94,11 +111,7 @@ impl Trace {
         let mut other = BTreeMap::new();
         other.insert(
             "status".to_string(),
-            if self.violation {
-                "violation".to_string()
-            } else {
-                "ok".to_string()
-            },
+            self.status.as_str().to_string(),
         );
         if !pending_diagnostics.is_empty() {
             other.insert(

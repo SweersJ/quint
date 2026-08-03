@@ -1,6 +1,6 @@
 use crate::evaluator::{Env, Interpreter};
 use crate::ir::{LookupDefinition, LookupTable, QuintError};
-use crate::itf::Trace;
+use crate::itf::{Trace, TraceStatus};
 use crate::progress::Reporter;
 use crate::verbosity::Verbosity;
 use serde::Serialize;
@@ -65,7 +65,7 @@ impl TestCase {
         let mut nsamples = 0;
         let mut trace = Trace {
             states: Vec::new(),
-            violation: false,
+            status: TraceStatus::Ok,
             seed,
         };
 
@@ -87,7 +87,7 @@ impl TestCase {
                             QuintError::new("QNT511", &format!("Test {test_name} returned false"))
                                 .with_reference(test_def_id);
                         errors.push(error);
-                        trace.violation = true;
+                        trace.status = TraceStatus::Violation;
                         break;
                     }
                     if env.rand.get_state() == prev_rng_state {
@@ -96,6 +96,7 @@ impl TestCase {
                 }
                 Err(e) => {
                     errors.push(e);
+                    trace.status = TraceStatus::Error;
                     break;
                 }
             }

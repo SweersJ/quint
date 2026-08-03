@@ -285,7 +285,7 @@ export class Evaluator {
         const quintExResult = maybeEvalResult.value.toQuintEx(zerog)
         assert(quintExResult.kind === 'bool', 'invalid simulation produced non-boolean value ')
         const simulationSucceeded = quintExResult.value
-        const status = simulationSucceeded ? 'ok' : 'violation'
+        const status = failure ? 'error' : simulationSucceeded ? 'ok' : 'violation'
         const states = trace.frame.args.map(e => e.toQuintEx(zerog))
 
         if (onTrace !== undefined) {
