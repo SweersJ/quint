@@ -18,11 +18,19 @@ use std::process::Command;
 use std::{error::Error, io::Write};
 use tempfile::NamedTempFile;
 
+fn quint_command() -> Command {
+    if cfg!(windows) {
+        Command::new("quint.cmd")
+    } else {
+        Command::new("quint")
+    }
+}
+
 pub fn parse(quint_content: &str, inv: Option<&str>) -> Result<QuintOutput, Box<dyn Error>> {
     let mut temp_file = NamedTempFile::new()?;
     temp_file.write_all(quint_content.as_bytes())?;
 
-    let output = Command::new("quint")
+    let output = quint_command()
         .arg("compile")
         .arg(temp_file.path())
         .args(["--invariant", inv.unwrap_or("true")])
@@ -57,7 +65,7 @@ pub fn parse_from_path(
 
     // Spawn the command and redirect stdout to the temporary file
     // We can't read the output directly because it's too big
-    let output = Command::new("quint")
+    let output = quint_command()
         .arg("compile")
         .arg(file_path)
         .args(["--init", init])
