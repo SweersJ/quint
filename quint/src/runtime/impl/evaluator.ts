@@ -289,7 +289,7 @@ export class Evaluator {
         const states = trace.frame.args.map(e => e.toQuintEx(zerog))
 
         if (onTrace !== undefined) {
-          onTrace(index, status, this.varNames(), states)
+          onTrace(index, status, this.varNames(), states, trace.seed)
         }
 
         return right({ states, result: simulationSucceeded, seed: trace.seed })
@@ -402,7 +402,7 @@ export class Evaluator {
           message: `Test ${name} returned false`,
           reference: testDef.id,
         }
-        onTrace(index, 'failed', this.varNames(), states, name)
+        onTrace(index, 'failed', this.varNames(), states, seed, name)
         progressBar.stop()
         return {
           name,
@@ -417,7 +417,7 @@ export class Evaluator {
           // This successful test did not use non-determinism.
           // Running it one time is sufficient.
 
-          onTrace(index, 'passed', this.varNames(), states, name)
+          onTrace(index, 'passed', this.varNames(), states, seed, name)
           progressBar.stop()
           return {
             name,
@@ -435,7 +435,7 @@ export class Evaluator {
     const states = this.recorder.bestTraces[0]?.frame?.args?.map(rv.toQuintEx)
     const frames = this.recorder.bestTraces[0]?.frame?.subframes ?? []
 
-    onTrace(index, 'passed', this.varNames(), states, name)
+    onTrace(index, 'passed', this.varNames(), states, seed, name)
 
     progressBar.stop()
     return {

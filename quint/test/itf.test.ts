@@ -5,8 +5,15 @@ import { zip } from '../src/util'
 
 import { buildExpression } from './builders/ir'
 import { ItfTrace, ofItf, ofItfNormalized, toItf } from '../src/itf'
+import { addItfHeader } from '../src/cliHelpers'
 
 describe('toItf', () => {
+  it('includes the seed in trace metadata', () => {
+    const trace = addItfHeader('model.qnt', 'ok', 123n, { vars: [], states: [] })
+
+    assert.equal(trace['#meta'].seed, '123')
+  })
+
   it('converts two states', () => {
     const trace = ['{ x: 2, y: true }', '{ x: 3, y: false }'].map(buildExpression)
 

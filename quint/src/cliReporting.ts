@@ -33,7 +33,14 @@ import { createFinders, formatError } from './errorReporter'
 import { ErrorMessage } from './ErrorMessage'
 import { Doc, brackets, format, line, nest, space, text } from './prettierimp'
 
-export type TraceHook = (index: number, status: string, vars: string[], states: QuintEx[], name?: string) => void
+export type TraceHook = (
+  index: number,
+  status: string,
+  vars: string[],
+  states: QuintEx[],
+  seed: bigint,
+  name?: string
+) => void
 
 /**
  * Print a counterexample if the appropriate verbosity is set.
@@ -324,7 +331,7 @@ export function prepareOnTrace(
   nTraces: number,
   metadata: boolean
 ): TraceHook {
-  return (index: number, status: string, vars: string[], states: QuintEx[], name: string | undefined) => {
+  return (index: number, status: string, vars: string[], states: QuintEx[], seed: bigint, name?: string) => {
     if (outputTemplate) {
       const filename = name
         ? expandNamedOutputTemplate(outputTemplate, name, index, { autoAppend: nTraces > 1 })
@@ -332,7 +339,7 @@ export function prepareOnTrace(
 
       const trace = toItf(vars, states, metadata)
       if (trace.isRight()) {
-        const jsonObj = addItfHeader(source, status, trace.value)
+        const jsonObj = addItfHeader(source, status, seed, trace.value)
         writeToJson(filename, jsonObj)
       } else {
         console.error(`ITF conversion failed on ${index}: ${trace.value}`)

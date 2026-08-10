@@ -109,10 +109,8 @@ impl Trace {
         }
 
         let mut other = BTreeMap::new();
-        other.insert(
-            "status".to_string(),
-            self.status.as_str().to_string(),
-        );
+        other.insert("status".to_string(), self.status.as_str().to_string());
+        other.insert("seed".to_string(), self.seed.to_string());
         if !pending_diagnostics.is_empty() {
             other.insert(
                 "pending_diagnostics".to_string(),

@@ -98,13 +98,14 @@ export function getInvariants(args: { invariant?: string; invariants?: string[] 
   return [invariantString, invariantsList]
 }
 
-export function addItfHeader(source: string, status: string, traceInJson: any): any {
+export function addItfHeader(source: string, status: string, seed: bigint, traceInJson: any): any {
   return {
     '#meta': {
       format: 'ITF',
       'format-description': 'https://apalache-mc.org/docs/adr/015adr-trace.html',
       source,
       status,
+      seed: seed.toString(),
       description: 'Created by Quint on ' + new Date(),
       timestamp: Date.now(),
     },

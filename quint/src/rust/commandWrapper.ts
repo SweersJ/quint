@@ -138,7 +138,7 @@ export class CommandWrapper {
 
         parsed.bestTraces.forEach((trace: any, index: number) => {
           const status = parsed.status === 'error' ? 'error' : trace.result ? 'ok' : 'violation'
-          onTrace(index, status, vars, trace.states)
+          onTrace(index, status, vars, trace.states, trace.seed)
         })
       }
 
@@ -224,7 +224,7 @@ export class CommandWrapper {
 
           parsed.traces.forEach((trace: any) => {
             const status = trace.result ? 'ok' : 'violation'
-            onTrace(index, status, vars, trace.states, testName)
+            onTrace(index, status, vars, trace.states, BigInt(trace.seed), testName)
           })
         }
       }
